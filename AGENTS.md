@@ -102,3 +102,20 @@ Codexは以下の順番で作業する。
 - When generating a commit message, use the `conventional-commit` skill.
 - Generate commit messages primarily from staged changes.
 - Do not execute `git commit` unless explicitly requested by the user.
+
+## Git and Pull Request Rules
+
+- Commit messages must follow Conventional Commits 1.0.0.
+- Use the `conventional-commit` skill when generating commit messages.
+- Generate commit messages primarily from staged changes.
+- Do not execute `git commit` unless explicitly requested.
+
+- Use the `pull-request` skill when generating pull request content.
+- Pull request titles must use:
+  `<type>[optional scope]: [requirement-id] <description>`
+  when a relevant requirement exists.
+- Use one primary requirement ID in the PR title whenever possible.
+- Include all related requirement IDs in the PR description.
+- Generate pull request content from the complete branch diff against its base branch.
+- A pull request should represent one logical change.
+- Do not create, submit, merge, or modify a pull request unless explicitly requested.
