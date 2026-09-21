@@ -95,3 +95,10 @@ Codexは以下の順番で作業する。
 
 ユーザーから「実装しないでください」と指示された場合、
 ファイル変更やコマンド実行を行わず、調査・設計・提案のみを行う。
+
+## Git Commit Rules
+
+- Commit messages must follow Conventional Commits 1.0.0.
+- When generating a commit message, use the `conventional-commit` skill.
+- Generate commit messages primarily from staged changes.
+- Do not execute `git commit` unless explicitly requested by the user.
