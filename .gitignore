@@ -13,3 +13,4 @@ __pycache__/
 coverage/
 .tools/
 *.tsbuildinfo
+git-diff.txt
