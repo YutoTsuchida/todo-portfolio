@@ -1,6 +1,6 @@
 import os
 
-from sqlalchemy import URL
+from sqlalchemy import URL, make_url
 
 
 def database_url() -> URL:
@@ -13,3 +13,9 @@ def database_url() -> URL:
         port=int(os.environ["DB_PORT"]),
         database=os.environ["POSTGRES_DB"],
     )
+
+
+def migration_database_url() -> URL:
+    """Use the dedicated test URL when supplied, otherwise the development URL."""
+    test_url = os.environ.get("TEST_DATABASE_URL")
+    return make_url(test_url) if test_url else database_url()

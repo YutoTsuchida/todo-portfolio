@@ -28,7 +28,7 @@ Dockerの導入や起動は別途行ってください。ホストで品質チ�
 Frontendは`package-lock.json`と`npm ci`、Backendは`uv.lock`と`uv sync --locked`で推移的依存も固定します。
 直接依存は`frontend/package.json`と`backend/pyproject.toml`に記録しています。
 バージョン更新時はlockファイルも更新し、Docker・CI・ランタイム指定の整合を確認してください。
-Alembicは業務モデルを追加する次段階で導入・初期化します。空のMigrationは作成していません。
+AlembicでUser・Todo・Sessionのスキーマ変更を管理します。MigrationはBackend起動時に自動実行せず、明示的に適用します。SQLAlchemyの`create_all()`によるテーブル作成は使用しません。
 
 ## 初回セットアップと起動
 
@@ -101,6 +101,29 @@ PostgreSQLの初期ユーザー・パスワード・DB名は空のVolumeの初�
 
 接続パスワードはURL文字列へ連結せずSQLAlchemyのURLオブジェクトで扱います。
 Backendはプロセス環境変数を読み、`.env`を直接読みません（Composeが設定を渡します）。
+
+## Database Migration
+
+開発DBへ最新のMigrationを適用し、現在のrevisionを確認します。
+
+```sh
+docker compose exec backend uv run --locked alembic upgrade head
+docker compose exec backend uv run --locked alembic current
+```
+
+開発DBはホストへポートを公開していないため、Migrationは上記のとおりBackendコンテナ内から実行します。Backendの起動やモジュールimportではMigrationを実行しません。
+
+テストDBは開発DBと分離された`todo_test`だけを使用します。先にtest profileのPostgreSQLを起動し、専用URLでMigrationを適用してからテストします。
+
+```powershell
+docker compose --profile test up -d --wait db-test
+$env:TEST_DATABASE_URL = "postgresql+psycopg://todo_test:local_test_only@127.0.0.1:5433/todo_test"
+Set-Location backend
+uv run --locked alembic upgrade head
+uv run --locked pytest
+```
+
+通常の`docker compose down`では開発DBのnamed volumeは残ります。`down -v`はMigrationで作成したテーブルを含む開発データを削除するため、通常停止には使用しません。
 DB設定を`VITE_*`変数へ入れないでください。Proxy設定もブラウザへ埋め込みません。
 テストはDB名・ユーザー名が`todo_test`、ホストがlocalhost・127.0.0.1・db-testの場合のみ許可します。
 本番DBへのポート転送をテストの接続先に使わないでください。
