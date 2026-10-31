@@ -1,9 +1,9 @@
-FROM python:3.13.15-slim-bookworm
+FROM python:3.13.18-slim-bookworm
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     UV_PROJECT_ENVIRONMENT=/opt/venv
 WORKDIR /app
-RUN pip install --no-cache-dir uv==0.12.23
+RUN pip install --no-cache-dir uv==0.13.6
 COPY backend/pyproject.toml backend/uv.lock ./
 RUN uv sync --locked
 COPY backend/app ./app
